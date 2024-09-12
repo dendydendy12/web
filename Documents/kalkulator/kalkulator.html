@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kalkulator Sederhana</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .calculator {
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            max-width: 300px;
+            width: 100%;
+        }
+
+        .calculator-screen {
+            width: 100%;
+            height: 60px;
+            font-size: 2em;
+            text-align: right;
+            border: none;
+            outline: none;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+
+        .calculator-keys {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .calculator-keys button {
+            width: 100%;
+            height: 60px;
+            font-size: 1.5em;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            outline: none;
+            background-color: #f0f0f0;
+        }
+
+        .calculator-keys button.operator {
+            background-color: #f0f0f0;
+        }
+
+        .calculator-keys button:hover {
+            background-color: #eaeaea;
+        }
+    </style>
+</head>
+<body>
+
+<div class="calculator">
+    <input type="text" class="calculator-screen" value="" disabled>
+
+    <div class="calculator-keys">
+        <button class="operator" value="+">+</button>
+        <button class="operator" value="-">-</button>
+        <button class="operator" value="*">&times;</button>
+        <button class="operator" value="/">&divide;</button>
+        <button value="7">7</button>
+        <button value="8">8</button>
+        <button value="9">9</button>
+        <button value="4">4</button>
+        <button value="5">5</button>
+        <button value="6">6</button>
+        <button value="1">1</button>
+        <button value="2">2</button>
+        <button value="3">3</button>
+        <button value="0">0</button>
+        <button class="clear" value="clear">C</button>
+        <button class="equal-sign" value="=">=</button>
+    </div>
+</div>
+
+<script>
+    const calculatorScreen = document.querySelector('.calculator-screen');
+    const calculatorKeys = document.querySelector('.calculator-keys');
+    let currentInput = '0';
+    let calculationOperator = '';
+    let firstOperand = '';
+    let awaitingNextInput = false;
+
+    function inputNumber(number) {
+        if (currentInput === '0' || awaitingNextInput) {
+            currentInput = number;
+            awaitingNextInput = false;
+        } else {
+            currentInput += number;
+        }
+    }
+
+    function inputOperator(operator) {
+        if (calculationOperator === '') {
+            firstOperand = currentInput;
+        } else if (!awaitingNextInput) {
+            performCalculation();
+        }
+        calculationOperator = operator;
+        awaitingNextInput = true;
+    }
+
+    function performCalculation() {
+        let result = 0;
+        switch (calculationOperator) {
+            case '+':
+                result = parseFloat(firstOperand) + parseFloat(currentInput);
+                break;
+            case '-':
+                result = parseFloat(firstOperand) - parseFloat(currentInput);
+                break;
+            case '*':
+                result = parseFloat(firstOperand) * parseFloat(currentInput);
+                break;
+            case '/':
+                result = parseFloat(firstOperand) / parseFloat(currentInput);
+                break;
+            default:
+                return;
+        }
+        currentInput = result.toString();
+        calculationOperator = '';
+    }
+
+    function updateScreen() {
+        calculatorScreen.value = currentInput;
+    }
+
+    calculatorKeys.addEventListener('click', event => {
+        if (!event.target.matches('button')) return;
+        const key = event.target;
+        const keyValue = key.value;
+
+        if (key.classList.contains('operator')) {
+            inputOperator(keyValue);
+            updateScreen();
+            return;
+        }
+
+        if (keyValue === 'clear') {
+            currentInput = '0';
+            calculationOperator = '';
+            firstOperand = '';
+            awaitingNextInput = false;
+            updateScreen();
+            return;
+        }
+
+        inputNumber(keyValue);
+        updateScreen();
+    });
+</script>
+
+</body>
+</html>
